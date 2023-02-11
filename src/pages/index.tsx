@@ -17,13 +17,9 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Next.js advanced start template.</title>
+        <title>Fun Spending Tracker</title>
 
-        <meta
-          name="description"
-          content="Use tailwind css, eslint, prettier & absolute imports instantly.
-            Easily extendable zero-config template for pros and beginners."
-        />
+        <meta name="description" content="Discretionary Spending budget" />
 
         <link rel="icon" href="/favicon.ico" />
       </Head>
