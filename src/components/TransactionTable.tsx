@@ -1,5 +1,7 @@
 import React, { useMemo } from "react"
 
+import Link from "next/link"
+
 import Transaction from "@my-types/Transaction"
 
 class TransactionGrouping {
@@ -95,9 +97,9 @@ const TransactionTable = ({
         <tr>
           <th>Month</th>
           <th>Total</th>
-          <th>Name</th>
-          <th>Amount</th>
           <th>Bought?</th>
+          <th>Amount</th>
+          <th>Name</th>
           {showCategory && <th>Category</th>}
           {showStore && <th>Store</th>}
           <th>Notes</th>
@@ -126,23 +128,26 @@ const TransactionTable = ({
                     </td>
                   </>
                 )}
-                <td>{t.name}</td>
-                <td>
-                  <Money amount={t.amount} />
-                </td>
                 <td>
                   <input type="checkbox" checked={t.bought} disabled />
                 </td>
+                <td>
+                  <Money amount={t.amount} />
+                </td>
+                <td>{t.link ? <Link href={t.link}>{t.name}</Link> : t.name}</td>
                 {showCategory && <td>{t.category}</td>}
                 {showStore && <td>{t.store}</td>}
                 <td>{t.notes}</td>
               </tr>
             ))}
             <tr>
-              <td className="py-2">Total</td>
+              <td className="py-2"></td>
               <td className="border-r-2 py-2">
                 <Money amount={runningTotalsAfterMonths[tg.month]} />
               </td>
+              <td className="py-2"></td>
+              <td className="py-2"></td>
+              <td className="py-2">Running total</td>
             </tr>
           </React.Fragment>
         ))}

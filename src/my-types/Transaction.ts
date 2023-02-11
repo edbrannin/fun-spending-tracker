@@ -7,6 +7,7 @@ type Transaction = {
   category: string
   notes: string
   bought: boolean
+  link: string
 }
 
 export default Transaction
