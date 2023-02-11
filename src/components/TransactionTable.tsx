@@ -18,15 +18,15 @@ class TransactionGrouping {
   month: string
   transactions: Transaction[]
   get totalSpent(): number {
+    return this.transactions
+      .filter((t) => t.bought)
+      .reduce((total: number, t: Transaction) => total + t.amount, 0)
+  }
+  get totalPlanned(): number {
     return this.transactions.reduce(
       (total: number, t: Transaction) => total + t.amount,
       0
     )
-  }
-  get totalPlanned(): number {
-    return this.transactions
-      .filter((t) => t.bought)
-      .reduce((total: number, t: Transaction) => total + t.amount, 0)
   }
 }
 
@@ -90,7 +90,7 @@ const TransactionTable = ({
   )
 
   return (
-    <table className="w-full">
+    <table className="my-6 w-full">
       <thead>
         <tr>
           <th>Month</th>
@@ -115,13 +115,13 @@ const TransactionTable = ({
                       {tg.totalSpent !== tg.totalPlanned && (
                         <>
                           <div>
-                            <Money amount={tg.totalPlanned} />
+                            <Money amount={tg.totalSpent} />
                           </div>
                           <hr />
                         </>
                       )}
                       <div>
-                        <Money amount={tg.totalSpent} />
+                        <Money amount={tg.totalPlanned} />
                       </div>
                     </td>
                   </>
@@ -139,8 +139,8 @@ const TransactionTable = ({
               </tr>
             ))}
             <tr>
-              <td>Total</td>
-              <td>
+              <td className="py-2">Total</td>
+              <td className="border-r-2 py-2">
                 <Money amount={runningTotalsAfterMonths[tg.month]} />
               </td>
             </tr>
