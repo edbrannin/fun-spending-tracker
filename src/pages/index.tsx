@@ -1,7 +1,6 @@
 import React from "react"
 
 import Head from "next/head"
-import Link from "next/link"
 import useSWR from "swr"
 
 import Debug from "@components/Debug"
@@ -39,31 +38,6 @@ export default function Home() {
             <Debug name="Transaction Error" value={transactionError} />
           )}
           <TransactionTable transactions={transactions} />
-
-          <h2 className="mx-auto mt-8 max-w-4xl px-10 text-center text-base tracking-tight text-gray-600 sm:text-2xl md:mt-5 md:text-2xl">
-            Tailwind CSS 3.0, ESLint & Prettier without a single line of config!
-            Easily extendable zero-config template for pros and beginners.
-            <Link href="https://github.com/agcty/nextjs-advanced-starter">
-              <a
-                type="button"
-                className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-4 font-medium leading-6 text-white transition duration-150 ease-in-out hover:bg-blue-500 focus:border-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-400 active:bg-blue-700 sm:px-10"
-              >
-                Copy Template from GitHub
-              </a>
-            </Link>
-          </h2>
-
-          <div className="px-4 sm:px-0">
-            <p className="mt-6 text-center text-xs font-medium text-gray-600">
-              Built by{" "}
-              <a
-                className="font-medium text-blue-600 transition duration-150 ease-in-out hover:text-blue-500 focus:underline focus:outline-none"
-                href="https://twitter.com/edbrannin"
-              >
-                @edbrannin
-              </a>
-            </p>
-          </div>
         </div>
       </main>
     </div>
