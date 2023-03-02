@@ -1,8 +1,18 @@
 import React, { useMemo } from "react"
 
+import formatDate from "date-fns/format"
+import parseDate from "date-fns/parse"
 import Link from "next/link"
 
 import Transaction from "@my-types/Transaction"
+
+const formatMonth = (monthDate) => {
+  if (!monthDate) {
+    return ""
+  }
+  const parsedDate = parseDate(monthDate, "yyyy-MM-dd", new Date())
+  return formatDate(parsedDate, "MMM yyyy")
+}
 
 class TransactionGrouping {
   constructor(month: string, transactions?: Transaction[]) {
@@ -112,7 +122,9 @@ const TransactionTable = ({
               <tr key={t.id} className={`${index === 0 && "border-t-2"}`}>
                 {index === 0 && (
                   <>
-                    <td rowSpan={tg.transactions.length}>{tg.month}</td>
+                    <td rowSpan={tg.transactions.length}>
+                      {formatMonth(tg.month)}
+                    </td>
                     <td rowSpan={tg.transactions.length} className="border-r-2">
                       {tg.totalSpent !== tg.totalPlanned && (
                         <>
