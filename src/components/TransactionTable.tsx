@@ -15,6 +15,9 @@ const formatMonth = (monthDate) => {
 }
 
 class TransactionGrouping {
+  month: string
+  transactions: Transaction[]
+
   constructor(month: string, transactions?: Transaction[]) {
     this.month = month
     this.transactions = transactions || []
@@ -27,14 +30,31 @@ class TransactionGrouping {
       }
     })
   }
-  month: string
-  transactions: Transaction[]
-  get totalSpent(): number {
+
+  get hasIncome(): boolean {
+    return this.transactions.filter((tx) => tx.income > 0).length > 0
+  }
+
+  get totalSpentCost(): number {
+    return this.transactions
+      .filter((t) => t.bought)
+      .reduce((total: number, t: Transaction) => total + t.cost, 0)
+  }
+
+  get totalPlannedCost(): number {
+    return this.transactions.reduce(
+      (total: number, t: Transaction) => total + t.cost,
+      0
+    )
+  }
+
+  get totalSpentAmount(): number {
     return this.transactions
       .filter((t) => t.bought)
       .reduce((total: number, t: Transaction) => total + t.amount, 0)
   }
-  get totalPlanned(): number {
+
+  get totalPlannedAmount(): number {
     return this.transactions.reduce(
       (total: number, t: Transaction) => total + t.amount,
       0
@@ -66,7 +86,7 @@ const groupByMonth = (
   return [...transactionGroupingssByMonth.values()]
 }
 
-const calculateRunningTotals = (
+const calculateRunningTotalCosts = (
   transactionGroups: TransactionGrouping[],
   monthlyBudget: number
 ): Record<string, number> =>
@@ -76,7 +96,21 @@ const calculateRunningTotals = (
     return {
       ...records,
       [currentMonth.month]:
-        lastTotal + monthlyBudget - currentMonth.totalPlanned,
+        lastTotal + monthlyBudget - currentMonth.totalPlannedCost,
+    }
+  }, {})
+
+const calculateRunningTotalAmounts = (
+  transactionGroups: TransactionGrouping[],
+  monthlyBudget: number
+): Record<string, number> =>
+  transactionGroups.reduce((records, currentMonth, index) => {
+    const lastMonth = transactionGroups[index - 1]?.month
+    const lastTotal = lastMonth ? records[lastMonth] : 0
+    return {
+      ...records,
+      [currentMonth.month]:
+        lastTotal + monthlyBudget + currentMonth.totalPlannedAmount,
     }
   }, {})
 
@@ -96,9 +130,14 @@ const TransactionTable = ({
     [transactions]
   )
 
-  const runningTotalsAfterMonths = useMemo(
-    () => calculateRunningTotals(transactionGroups, monthlyBudget),
-    [transactionGroups]
+  const runningCostTotalsAfterMonths = useMemo(
+    () => calculateRunningTotalCosts(transactionGroups, monthlyBudget),
+    [transactionGroups, monthlyBudget]
+  )
+
+  const runningAmountTotalsAfterMonths = useMemo(
+    () => calculateRunningTotalAmounts(transactionGroups, monthlyBudget),
+    [transactionGroups, monthlyBudget]
   )
 
   return (
@@ -119,23 +158,28 @@ const TransactionTable = ({
         {transactionGroups.map((tg) => (
           <React.Fragment key={tg.month}>
             {tg.transactions.map((t, index) => (
-              <tr key={t.id} className={`${index === 0 && "border-t-2"}`}>
+              <tr
+                key={t.id}
+                className={`${index === 0 && "border-t-2"} ${
+                  t.amount > 0 && "bg-emerald-500"
+                }`}
+              >
                 {index === 0 && (
                   <>
                     <td rowSpan={tg.transactions.length}>
                       {formatMonth(tg.month)}
                     </td>
                     <td rowSpan={tg.transactions.length} className="border-r-2">
-                      {tg.totalSpent !== tg.totalPlanned && (
+                      {tg.totalSpentCost !== tg.totalPlannedCost && (
                         <>
                           <div>
-                            <Money amount={tg.totalSpent} />
+                            <Money amount={tg.totalSpentCost} />
                           </div>
                           <hr />
                         </>
                       )}
                       <div>
-                        <Money amount={tg.totalPlanned} />
+                        <Money amount={tg.totalPlannedCost} />
                       </div>
                     </td>
                   </>
@@ -149,17 +193,33 @@ const TransactionTable = ({
                 <td>{t.link ? <Link href={t.link}>{t.name}</Link> : t.name}</td>
                 {showCategory && <td>{t.category}</td>}
                 {showStore && <td>{t.store}</td>}
-                <td>{t.notes}</td>
+                <td className="max-w-prose whitespace-pre-line">{t.notes}</td>
               </tr>
             ))}
+            {tg.hasIncome && (
+              <tr>
+                <td className="py-2"></td>
+                <td className="border-r-2 py-2">
+                  <Money
+                    amount={tg.transactions.reduce(
+                      (sum, { cost }) => sum + cost,
+                      0
+                    )}
+                  />
+                </td>
+                <td className="py-2"></td>
+                <td className="py-2"></td>
+                <td className="py-2">Month Total Spending</td>
+              </tr>
+            )}
             <tr>
               <td className="py-2"></td>
               <td className="border-r-2 py-2">
-                <Money amount={runningTotalsAfterMonths[tg.month]} />
+                <Money amount={runningAmountTotalsAfterMonths[tg.month]} />
               </td>
               <td className="py-2"></td>
               <td className="py-2"></td>
-              <td className="py-2">Running total</td>
+              <td className="py-2">Running Total Balance</td>
             </tr>
           </React.Fragment>
         ))}

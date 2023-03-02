@@ -17,6 +17,8 @@ const getAllTransactions = async () => {
       id: record.id,
       name: record.get("Name") as string,
       amount: record.get("Amount") as number,
+      cost: (record.get("Cost") as number) || 0,
+      income: (record.get("Income") as number) || 0,
       month: record.get("Month") as string,
       store: record.get("Store") as string,
       category: record.get("Category") as string,
