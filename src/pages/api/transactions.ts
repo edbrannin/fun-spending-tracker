@@ -9,7 +9,7 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
 const getAllTransactions = async () => {
   const records = await base("Spending")
     .select({
-      view: "By Month",
+      view: "Planned By Month",
     })
     .all()
   return records.map(
