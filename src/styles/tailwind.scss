@@ -9,3 +9,18 @@
 html {
   @apply antialiased;
 }
+
+body {
+  @apply bg-gradient-to-b from-gray-50 via-gray-50 to-gray-100;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    @apply bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800;
+    color: #dcb;
+  }
+
+  * {
+    border-color: #444;
+  }
+}
