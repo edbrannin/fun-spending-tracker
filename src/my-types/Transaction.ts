@@ -10,6 +10,7 @@ type Transaction = {
   notes: string
   bought: boolean
   link: string
+  priority?: number
 }
 
 export default Transaction

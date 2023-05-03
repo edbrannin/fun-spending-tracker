@@ -25,6 +25,7 @@ const getAllTransactions = async () => {
       notes: record.get("Notes") as string,
       bought: record.get("Bought") as boolean,
       link: record.get("Link") as string,
+      priority: record.get("Priority") as number,
     })
   )
 }
