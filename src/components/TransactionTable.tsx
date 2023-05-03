@@ -120,12 +120,14 @@ const TransactionTable = ({
   transactions,
   showCategory = false,
   showStore = false,
+  hideMonthsBefore = "2023-04",
   monthlyBudget = 30,
 }: {
   transactions: Transaction[]
   showCategory?: boolean
   showStore?: boolean
   monthlyBudget?: number
+  hideMonthsBefore?: string
 }) => {
   const transactionGroups = useMemo(
     () => groupByMonth(transactions),
@@ -152,15 +154,22 @@ const TransactionTable = ({
         </tr>
       </thead>
       <tbody>
-        {transactionGroups.map((tg) => (
-          <TransactionTableGroup
-            key={tg.month}
-            tg={tg}
-            runningAmountTotal={runningAmountTotalsAfterMonths[tg.month]}
-            showCategory={showCategory}
-            showStore={showStore}
-          />
-        ))}
+        {transactionGroups
+          .filter((tg) => {
+            if (hideMonthsBefore) {
+              return tg.month >= hideMonthsBefore
+            }
+            return true
+          })
+          .map((tg) => (
+            <TransactionTableGroup
+              key={tg.month}
+              tg={tg}
+              runningAmountTotal={runningAmountTotalsAfterMonths[tg.month]}
+              showCategory={showCategory}
+              showStore={showStore}
+            />
+          ))}
       </tbody>
     </table>
   )
