@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
 
 import Head from "next/head"
 import useSWR from "swr"
 
 import Debug from "@components/Debug"
 import TransactionTable from "@components/TransactionTable"
+import RunningTotalMode from "@my-types/RunningTotalMode"
 
 const fetcher = (a: RequestInfo | URL, b: RequestInit) =>
   fetch(a, b).then((res) => res.json())
@@ -13,6 +14,10 @@ export default function Home() {
   const { data: transactions, error: transactionError } = useSWR(
     "/api/transactions",
     fetcher
+  )
+
+  const [runningTotalMode, setRunningTotalMode] = useState(
+    "expected" as RunningTotalMode
   )
 
   return (
@@ -31,10 +36,26 @@ export default function Home() {
             Fun Spending Tracker
           </h1>
 
+          <div>
+            Mode:{" "}
+            <select
+              value={runningTotalMode}
+              onChange={(e) =>
+                setRunningTotalMode(e.target.value as RunningTotalMode)
+              }
+            >
+              <option>spent</option>
+              <option>expected</option>
+            </select>
+          </div>
+
           {transactionError && (
             <Debug name="Transaction Error" value={transactionError} />
           )}
-          <TransactionTable transactions={transactions} />
+          <TransactionTable
+            transactions={transactions}
+            runningTotalMode={runningTotalMode}
+          />
         </div>
       </main>
     </div>

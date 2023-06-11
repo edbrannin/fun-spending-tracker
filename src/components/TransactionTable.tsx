@@ -4,6 +4,7 @@ import formatDate from "date-fns/format"
 import parseDate from "date-fns/parse"
 import Link from "next/link"
 
+import RunningTotalMode from "@my-types/RunningTotalMode"
 import Transaction from "@my-types/Transaction"
 
 import Money from "./Money"
@@ -97,9 +98,31 @@ const groupByMonth = (
   return keys.map((k) => transactionGroupingssByMonth.get(k))
 }
 
+const monthTotal = (
+  month: TransactionGrouping,
+  {
+    mode = "expected",
+  }: {
+    mode: RunningTotalMode
+  }
+) => {
+  if (mode === "expected") {
+    return month.totalPlannedAmount
+  }
+  if (mode === "spent") {
+    return month.totalSpentAmount
+  }
+  throw new Error(`Unexpected total mode: ${mode}`)
+}
+
 const calculateRunningTotalAmounts = (
   transactionGroups: TransactionGrouping[],
-  monthlyBudget: number
+  monthlyBudget: number,
+  {
+    mode = "expected",
+  }: {
+    mode: RunningTotalMode
+  }
 ): Record<string, number> =>
   transactionGroups.reduce((records, currentMonth, index) => {
     const lastMonth = transactionGroups[index - 1]?.month
@@ -107,7 +130,7 @@ const calculateRunningTotalAmounts = (
     return {
       ...records,
       [currentMonth.month]:
-        lastTotal + monthlyBudget + currentMonth.totalPlannedAmount,
+        lastTotal + monthlyBudget + monthTotal(currentMonth, { mode }),
     }
   }, {})
 
@@ -117,12 +140,14 @@ const TransactionTable = ({
   showStore = false,
   hideMonthsBefore = "2023-04",
   monthlyBudget = 30,
+  runningTotalMode = "expected",
 }: {
   transactions: Transaction[]
   showCategory?: boolean
   showStore?: boolean
   monthlyBudget?: number
   hideMonthsBefore?: string
+  runningTotalMode?: RunningTotalMode
 }) => {
   const transactionGroups = useMemo(
     () => groupByMonth(transactions),
@@ -130,8 +155,11 @@ const TransactionTable = ({
   )
 
   const runningAmountTotalsAfterMonths = useMemo(
-    () => calculateRunningTotalAmounts(transactionGroups, monthlyBudget),
-    [transactionGroups, monthlyBudget]
+    () =>
+      calculateRunningTotalAmounts(transactionGroups, monthlyBudget, {
+        mode: runningTotalMode,
+      }),
+    [transactionGroups, monthlyBudget, runningTotalMode]
   )
 
   return (
