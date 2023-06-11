@@ -6,6 +6,8 @@ import Link from "next/link"
 
 import Transaction from "@my-types/Transaction"
 
+import Money from "./Money"
+
 const formatMonth = (monthDate) => {
   if (!monthDate) {
     return ""
@@ -75,13 +77,6 @@ class TransactionGrouping {
     )
   }
 }
-
-const formatMoney = (amount: number, currency = "USD") =>
-  amount.toLocaleString("en-US", { style: "currency", currency })
-
-const Money = ({ amount, currency = "USD" }) => (
-  <span>{formatMoney(amount || 0, currency)}</span>
-)
 
 const groupByMonth = (
   transactions: Transaction[] = []
