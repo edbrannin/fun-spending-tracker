@@ -1,14 +1,29 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 
+import { format, subDays } from "date-fns"
 import Head from "next/head"
 import useSWR from "swr"
 
 import Debug from "@components/Debug"
 import TransactionTable from "@components/TransactionTable"
 import RunningTotalMode from "@my-types/RunningTotalMode"
+import Transaction from "@my-types/Transaction"
 
 const fetcher = (a: RequestInfo | URL, b: RequestInit) =>
   fetch(a, b).then((res) => res.json())
+
+const getTransactionMonths = (transactions: Transaction[]): string[] => {
+  if (!transactions) {
+    return []
+  }
+  const months = transactions.map((t) =>
+    t.month?.substring(0, "2020-02".length)
+  )
+  const result = new Set<string>(months)
+  return [...result].sort()
+}
+
+const getLastMonth = () => format(subDays(new Date(), 30), "yyyy-MM")
 
 export default function Home() {
   const { data: transactions, error: transactionError } = useSWR(
@@ -19,6 +34,13 @@ export default function Home() {
   const [runningTotalMode, setRunningTotalMode] = useState(
     "expected" as RunningTotalMode
   )
+
+  const allMonths = useMemo(
+    () => getTransactionMonths(transactions),
+    [transactions]
+  )
+
+  const [hideMonthsBefore, setHideMonthsBefore] = useState(() => getLastMonth())
 
   return (
     <div>
@@ -49,12 +71,27 @@ export default function Home() {
             </select>
           </div>
 
+          <div>
+            Hide Months Before:{" "}
+            <select
+              value={hideMonthsBefore}
+              onChange={(e) =>
+                setHideMonthsBefore(e.target.value as RunningTotalMode)
+              }
+            >
+              {allMonths.map((month) => (
+                <option key={month}>{month}</option>
+              ))}
+            </select>
+          </div>
+
           {transactionError && (
             <Debug name="Transaction Error" value={transactionError} />
           )}
           <TransactionTable
             transactions={transactions}
             runningTotalMode={runningTotalMode}
+            hideMonthsBefore={hideMonthsBefore}
           />
         </div>
       </main>
