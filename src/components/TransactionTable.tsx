@@ -214,7 +214,7 @@ const TransactionTableGroup = ({
       <tr
         key={t.id}
         className={`${index === 0 && "border-t-2"} ${
-          t.amount > 0 && "bg-emerald-500"
+          t.amount > 0 && "is-income"
         }`}
       >
         {index === 0 && (

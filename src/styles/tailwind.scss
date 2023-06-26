@@ -15,8 +15,12 @@ body {
 }
 
 a {
-  @apply text-blue-600 dark:text-blue-500 hover:underline
+  @apply text-blue-600 dark:text-blue-500 hover:underline;
 }
+
+.is-income {
+  @apply bg-emerald-500;
+};
 
 @media (prefers-color-scheme: dark) {
   body {
@@ -27,6 +31,10 @@ a {
   select {
     background-color: rgba(0, 0, 0, 0);
     color: #dcb;
+  }
+
+  .is-income {
+    @apply bg-emerald-800;
   }
 
   * {
