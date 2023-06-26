@@ -198,6 +198,7 @@ const TransactionTable = ({
               runningAmountTotal={runningAmountTotalsAfterMonths[tg.month]}
               showCategory={showCategory}
               showStore={showStore}
+              runningTotalMode={runningTotalMode}
             />
           ))}
       </tbody>
@@ -210,11 +211,13 @@ const TransactionTableGroup = ({
   runningAmountTotal,
   showCategory,
   showStore,
+  runningTotalMode,
 }: {
   tg: TransactionGrouping
   runningAmountTotal: number
   showCategory: boolean
   showStore: boolean
+  runningTotalMode: RunningTotalMode
 }) => (
   <React.Fragment key={tg.month}>
     {tg.transactions.map((t, index) => (
@@ -263,9 +266,7 @@ const TransactionTableGroup = ({
       <tr>
         <td className="py-2"></td>
         <td className="border-r-2 py-2">
-          <Money
-            amount={tg.transactions.reduce((sum, { cost }) => sum + cost, 0)}
-          />
+          <Money amount={monthTotal(tg, { mode: runningTotalMode })} />
         </td>
         <td className="py-2"></td>
         <td className="py-2"></td>
