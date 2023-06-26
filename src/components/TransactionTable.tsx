@@ -39,6 +39,13 @@ class TransactionGrouping {
     this.transactions.push(t)
 
     this.transactions.sort((a, b) => {
+      const boughtA = a.bought || false
+      const boughtB = b.bought || false
+
+      if (boughtA != boughtB) {
+        return boughtA ? -1 : 1
+      }
+
       const priorityA = a.priority || 0
       const priorityB = b.priority || 0
       if (priorityA != priorityB) {
