@@ -5,6 +5,7 @@ import Head from "next/head"
 import useSWR from "swr"
 
 import Debug from "@components/Debug"
+import Select from "@components/Select"
 import TransactionTable from "@components/TransactionTable"
 import RunningTotalMode from "@my-types/RunningTotalMode"
 import Transaction from "@my-types/Transaction"
@@ -58,31 +59,20 @@ export default function Home() {
             Fun Spending Tracker
           </h1>
 
-          <div>
-            Mode:{" "}
-            <select
+          <div className="flex flex-row justify-evenly">
+            <Select<RunningTotalMode>
+              label="Mode"
+              onChange={setRunningTotalMode}
+              options={["spent", "expected"]}
               value={runningTotalMode}
-              onChange={(e) =>
-                setRunningTotalMode(e.target.value as RunningTotalMode)
-              }
-            >
-              <option>spent</option>
-              <option>expected</option>
-            </select>
-          </div>
-
-          <div>
-            Hide Months Before:{" "}
-            <select
+              defaultValue={"spent"}
+            />
+            <Select<string>
+              label="Hide Months Before"
+              onChange={setHideMonthsBefore}
+              options={allMonths}
               value={hideMonthsBefore}
-              onChange={(e) =>
-                setHideMonthsBefore(e.target.value as RunningTotalMode)
-              }
-            >
-              {allMonths.map((month) => (
-                <option key={month}>{month}</option>
-              ))}
-            </select>
+            />
           </div>
 
           {transactionError && (
